@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MathMatrix 3D — Calculator</title>
+  <title>MathMatrix 3D — Engineering Grade Calculator</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@500;700&family=Outfit:wght@600;800;900&display=swap" rel="stylesheet">
@@ -204,6 +204,7 @@
       transform: translateY(-6px);
       transition: transform 0.06s ease, box-shadow 0.06s ease;
       box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.2);
+      pointer-events: none;
     }
 
     .key-3d:active .key-top {
@@ -211,34 +212,16 @@
       filter: brightness(0.92);
     }
 
-    .key-num .key-top {
-      background: var(--key-num-top);
-      box-shadow: 0 6px 0 var(--key-num-side), inset 0 2px 0 rgba(255, 255, 255, 0.15);
-      color: var(--key-num-text);
-    }
+    .key-num .key-top { background: var(--key-num-top); box-shadow: 0 6px 0 var(--key-num-side), inset 0 2px 0 rgba(255, 255, 255, 0.15); color: var(--key-num-text); }
     .key-num:active .key-top { box-shadow: 0 0 0 var(--key-num-side); }
 
-    .key-fn .key-top {
-      background: var(--key-fn-top);
-      box-shadow: 0 6px 0 var(--key-fn-side), inset 0 2px 0 rgba(255, 255, 255, 0.25);
-      color: var(--key-fn-text);
-    }
+    .key-fn .key-top { background: var(--key-fn-top); box-shadow: 0 6px 0 var(--key-fn-side), inset 0 2px 0 rgba(255, 255, 255, 0.25); color: var(--key-fn-text); }
     .key-fn:active .key-top { box-shadow: 0 0 0 var(--key-fn-side); }
 
-    .key-op .key-top {
-      background: var(--key-op-top);
-      box-shadow: 0 6px 0 var(--key-op-side), inset 0 2px 0 rgba(255, 255, 255, 0.25);
-      color: var(--key-op-text);
-      font-size: 24px;
-    }
+    .key-op .key-top { background: var(--key-op-top); box-shadow: 0 6px 0 var(--key-op-side), inset 0 2px 0 rgba(255, 255, 255, 0.25); color: var(--key-op-text); font-size: 24px; }
     .key-op:active .key-top { box-shadow: 0 0 0 var(--key-op-side); }
 
-    .key-eq .key-top {
-      background: var(--key-eq-top);
-      box-shadow: 0 6px 0 var(--key-eq-side), inset 0 2px 0 rgba(255, 255, 255, 0.3), 0 0 16px rgba(6, 182, 212, 0.4);
-      color: var(--key-eq-text);
-      font-size: 26px;
-    }
+    .key-eq .key-top { background: var(--key-eq-top); box-shadow: 0 6px 0 var(--key-eq-side), inset 0 2px 0 rgba(255, 255, 255, 0.3), 0 0 16px rgba(6, 182, 212, 0.4); color: var(--key-eq-text); font-size: 26px; }
     .key-eq:active .key-top { box-shadow: 0 0 0 var(--key-eq-side); }
 
     .span-2 { grid-column: span 2; }
@@ -292,38 +275,41 @@
   </div>
 
   <script>
-    // State
-    let currentVal = '0';
-    let prevVal = '';
-    let currentOp = null;
+    var currentVal = '0';
+    var prevVal = '';
+    var currentOp = null;
 
-    function updateScreen() {
-      const currentElem = document.getElementById('currentDisplay');
-      const historyElem = document.getElementById('historyDisplay');
+    function renderScreen() {
+      var currentElem = document.getElementById('currentDisplay');
+      var historyElem = document.getElementById('historyDisplay');
       
-      currentElem.innerText = currentVal;
-      if (currentOp != null) {
-        const symbol = currentOp === '*' ? '×' : currentOp === '/' ? '÷' : currentOp === '-' ? '−' : '+';
-        historyElem.innerText = prevVal + ' ' + symbol;
-      } else {
-        historyElem.innerText = '';
+      if (currentElem) {
+        currentElem.textContent = currentVal;
+      }
+      if (historyElem) {
+        if (currentOp !== null) {
+          var symbol = currentOp === '*' ? '×' : currentOp === '/' ? '÷' : currentOp === '-' ? '−' : '+';
+          historyElem.textContent = prevVal + ' ' + symbol;
+        } else {
+          historyElem.textContent = '';
+        }
       }
     }
 
-    function appendDigit(d) {
-      if (d === '.' && currentVal.includes('.')) return;
-      if (currentVal === '0' && d !== '.') {
-        currentVal = d;
+    function appendDigit(digit) {
+      if (digit === '.' && currentVal.indexOf('.') !== -1) return;
+      if (currentVal === '0' && digit !== '.') {
+        currentVal = digit;
       } else {
-        currentVal += d;
+        currentVal += digit;
       }
-      updateScreen();
+      renderScreen();
     }
 
     function setOperation(op) {
       if (currentVal === '0' && op === '-') {
         currentVal = '-';
-        updateScreen();
+        renderScreen();
         return;
       }
       if (currentVal === '-' || currentVal === '') return;
@@ -334,15 +320,15 @@
       currentOp = op;
       prevVal = currentVal;
       currentVal = '0';
-      updateScreen();
+      renderScreen();
     }
 
     function calculateResult() {
-      const prev = parseFloat(prevVal);
-      const curr = parseFloat(currentVal);
+      var prev = parseFloat(prevVal);
+      var curr = parseFloat(currentVal);
       if (isNaN(prev) || isNaN(curr)) return;
 
-      let res = 0;
+      var res = 0;
       switch (currentOp) {
         case '+': res = prev + curr; break;
         case '-': res = prev - curr; break;
@@ -354,31 +340,30 @@
       currentVal = res.toString();
       currentOp = null;
       prevVal = '';
-      updateScreen();
+      renderScreen();
     }
 
     function clearAll() {
       currentVal = '0';
       prevVal = '';
       currentOp = null;
-      updateScreen();
+      renderScreen();
     }
 
     function deleteDigit() {
       if (currentVal === '0') return;
       currentVal = currentVal.slice(0, -1);
       if (!currentVal || currentVal === '-') currentVal = '0';
-      updateScreen();
+      renderScreen();
     }
 
     function toggleSign() {
       if (currentVal === '0') return;
       currentVal = (parseFloat(currentVal) * -1).toString();
-      updateScreen();
+      renderScreen();
     }
 
-    // Keyboard support
-    window.addEventListener('keydown', (e) => {
+    window.addEventListener('keydown', function(e) {
       if ((e.key >= '0' && e.key <= '9') || e.key === '.') appendDigit(e.key);
       if (['+', '-', '*', '/'].includes(e.key)) setOperation(e.key);
       if (e.key === 'Enter' || e.key === '=') { e.preventDefault(); calculateResult(); }
@@ -386,18 +371,20 @@
       if (e.key === 'Escape') clearAll();
     });
 
-    // Background Math Particles
-    const mathSymbols = ['∫ f(x)dx', '∑ n²', 'π ≈ 3.14', 'e^(iπ) + 1 = 0', '√x²', 'lim x→∞', '∂y/∂x', 'E = mc²', 'sin²θ + cos²θ = 1'];
-    const canvas = document.getElementById('mathCanvas');
-    for (let i = 0; i < 20; i++) {
-      const el = document.createElement('div');
-      el.className = 'math-symbol';
-      el.innerText = mathSymbols[Math.floor(Math.random() * mathSymbols.length)];
-      el.style.left = (Math.random() * 92) + 'vw';
-      el.style.fontSize = (Math.random() * 12 + 14) + 'px';
-      el.style.animationDuration = (Math.random() * 8 + 10) + 's';
-      el.style.animationDelay = '-' + (Math.random() * 10) + 's';
-      canvas.appendChild(el);
+    // Math Background Particles
+    var mathSymbols = ['∫ f(x)dx', '∑ n²', 'π ≈ 3.14', 'e^(iπ) + 1 = 0', '√x²', 'lim x→∞', '∂y/∂x', 'E = mc²'];
+    var canvas = document.getElementById('mathCanvas');
+    if (canvas) {
+      for (var i = 0; i < 20; i++) {
+        var el = document.createElement('div');
+        el.className = 'math-symbol';
+        el.textContent = mathSymbols[Math.floor(Math.random() * mathSymbols.length)];
+        el.style.left = (Math.random() * 92) + 'vw';
+        el.style.fontSize = (Math.random() * 12 + 14) + 'px';
+        el.style.animationDuration = (Math.random() * 8 + 10) + 's';
+        el.style.animationDelay = '-' + (Math.random() * 10) + 's';
+        canvas.appendChild(el);
+      }
     }
   </script>
 </body>
