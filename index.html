@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MathMatrix 3D — Engineering Grade Calculator</title>
+  <title>MathMatrix 3D — Calculator</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@500;700&family=Outfit:wght@600;800;900&display=swap" rel="stylesheet">
@@ -57,7 +57,6 @@
       position: relative;
     }
 
-    /* Math Formula Floating Background */
     .math-canvas {
       position: absolute;
       inset: 0;
@@ -85,7 +84,6 @@
       100% { transform: translateY(-20vh) rotate(360deg); opacity: 0; }
     }
 
-    /* 3D Calculator Chassis */
     .calc-3d-stage {
       position: relative;
       z-index: 10;
@@ -110,7 +108,6 @@
         inset 0 2px 0 rgba(255, 255, 255, 0.12);
     }
 
-    /* Top HUD / Banner */
     .hud-bar {
       display: flex;
       justify-content: space-between;
@@ -147,7 +144,6 @@
       border-radius: 6px;
     }
 
-    /* Display Screen */
     .screen {
       background: var(--screen-bg);
       border: 2px solid var(--screen-border);
@@ -181,14 +177,12 @@
       white-space: nowrap;
     }
 
-    /* 3D Keypad Grid */
     .keypad {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 12px;
     }
 
-    /* 3D Buttons */
     .key-3d {
       height: 58px;
       position: relative;
@@ -196,7 +190,6 @@
       border: none;
       cursor: pointer;
       outline: none;
-      user-select: none;
     }
 
     .key-top {
@@ -211,7 +204,6 @@
       transform: translateY(-6px);
       transition: transform 0.06s ease, box-shadow 0.06s ease;
       box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.2);
-      pointer-events: none; /* Allows click to pass straight to button */
     }
 
     .key-3d:active .key-top {
@@ -219,62 +211,45 @@
       filter: brightness(0.92);
     }
 
-    /* Numbers */
     .key-num .key-top {
       background: var(--key-num-top);
       box-shadow: 0 6px 0 var(--key-num-side), inset 0 2px 0 rgba(255, 255, 255, 0.15);
       color: var(--key-num-text);
     }
-    .key-num:active .key-top {
-      box-shadow: 0 0 0 var(--key-num-side);
-    }
+    .key-num:active .key-top { box-shadow: 0 0 0 var(--key-num-side); }
 
-    /* Danger Actions (AC/DEL) */
     .key-fn .key-top {
       background: var(--key-fn-top);
       box-shadow: 0 6px 0 var(--key-fn-side), inset 0 2px 0 rgba(255, 255, 255, 0.25);
       color: var(--key-fn-text);
     }
-    .key-fn:active .key-top {
-      box-shadow: 0 0 0 var(--key-fn-side);
-    }
+    .key-fn:active .key-top { box-shadow: 0 0 0 var(--key-fn-side); }
 
-    /* Operators */
     .key-op .key-top {
       background: var(--key-op-top);
       box-shadow: 0 6px 0 var(--key-op-side), inset 0 2px 0 rgba(255, 255, 255, 0.25);
       color: var(--key-op-text);
       font-size: 24px;
     }
-    .key-op:active .key-top {
-      box-shadow: 0 0 0 var(--key-op-side);
-    }
+    .key-op:active .key-top { box-shadow: 0 0 0 var(--key-op-side); }
 
-    /* Equals Key */
     .key-eq .key-top {
       background: var(--key-eq-top);
       box-shadow: 0 6px 0 var(--key-eq-side), inset 0 2px 0 rgba(255, 255, 255, 0.3), 0 0 16px rgba(6, 182, 212, 0.4);
       color: var(--key-eq-text);
       font-size: 26px;
     }
-    .key-eq:active .key-top {
-      box-shadow: 0 0 0 var(--key-eq-side);
-    }
+    .key-eq:active .key-top { box-shadow: 0 0 0 var(--key-eq-side); }
 
-    .span-2 {
-      grid-column: span 2;
-    }
+    .span-2 { grid-column: span 2; }
   </style>
 </head>
 <body>
 
-  <!-- Floating Mathematical Background -->
   <div class="math-canvas" id="mathCanvas"></div>
 
-  <!-- 3D Isometric Viewport -->
   <div class="calc-3d-stage">
     <main class="calculator">
-      <!-- HUD Bar -->
       <div class="hud-bar">
         <div class="hud-title">
           <span class="hud-pulse"></span>
@@ -283,99 +258,59 @@
         <span class="hud-chip">PROD v2.0</span>
       </div>
 
-      <!-- Screen Display -->
       <div class="screen">
         <div class="screen-history" id="historyDisplay"></div>
         <div class="screen-value" id="currentDisplay">0</div>
       </div>
 
-      <!-- Keypad -->
       <div class="keypad">
-        <button class="key-3d key-fn" id="clearBtn"><div class="key-top">AC</div></button>
-        <button class="key-3d key-fn" id="delBtn"><div class="key-top">⌫</div></button>
-        <button class="key-3d key-op" id="signBtn"><div class="key-top">±</div></button>
-        <button class="key-3d key-op" data-op="/"><div class="key-top">÷</div></button>
+        <button class="key-3d key-fn" onclick="clearAll()"><div class="key-top">AC</div></button>
+        <button class="key-3d key-fn" onclick="deleteDigit()"><div class="key-top">⌫</div></button>
+        <button class="key-3d key-op" onclick="toggleSign()"><div class="key-top">±</div></button>
+        <button class="key-3d key-op" onclick="setOperation('/')"><div class="key-top">÷</div></button>
 
-        <button class="key-3d key-num" data-val="7"><div class="key-top">7</div></button>
-        <button class="key-3d key-num" data-val="8"><div class="key-top">8</div></button>
-        <button class="key-3d key-num" data-val="9"><div class="key-top">9</div></button>
-        <button class="key-3d key-op" data-op="*"><div class="key-top">×</div></button>
+        <button class="key-3d key-num" onclick="appendDigit('7')"><div class="key-top">7</div></button>
+        <button class="key-3d key-num" onclick="appendDigit('8')"><div class="key-top">8</div></button>
+        <button class="key-3d key-num" onclick="appendDigit('9')"><div class="key-top">9</div></button>
+        <button class="key-3d key-op" onclick="setOperation('*')"><div class="key-top">×</div></button>
 
-        <button class="key-3d key-num" data-val="4"><div class="key-top">4</div></button>
-        <button class="key-3d key-num" data-val="5"><div class="key-top">5</div></button>
-        <button class="key-3d key-num" data-val="6"><div class="key-top">6</div></button>
-        <button class="key-3d key-op" data-op="-"><div class="key-top">−</div></button>
+        <button class="key-3d key-num" onclick="appendDigit('4')"><div class="key-top">4</div></button>
+        <button class="key-3d key-num" onclick="appendDigit('5')"><div class="key-top">5</div></button>
+        <button class="key-3d key-num" onclick="appendDigit('6')"><div class="key-top">6</div></button>
+        <button class="key-3d key-op" onclick="setOperation('-')"><div class="key-top">−</div></button>
 
-        <button class="key-3d key-num" data-val="1"><div class="key-top">1</div></button>
-        <button class="key-3d key-num" data-val="2"><div class="key-top">2</div></button>
-        <button class="key-3d key-num" data-val="3"><div class="key-top">3</div></button>
-        <button class="key-3d key-op" data-op="+"><div class="key-top">+</div></button>
+        <button class="key-3d key-num" onclick="appendDigit('1')"><div class="key-top">1</div></button>
+        <button class="key-3d key-num" onclick="appendDigit('2')"><div class="key-top">2</div></button>
+        <button class="key-3d key-num" onclick="appendDigit('3')"><div class="key-top">3</div></button>
+        <button class="key-3d key-op" onclick="setOperation('+')"><div class="key-top">+</div></button>
 
-        <button class="key-3d key-num span-2" data-val="0"><div class="key-top">0</div></button>
-        <button class="key-3d key-num" data-val="."><div class="key-top">.</div></button>
-        <button class="key-3d key-eq" id="equalsBtn"><div class="key-top">=</div></button>
+        <button class="key-3d key-num span-2" onclick="appendDigit('0')"><div class="key-top">0</div></button>
+        <button class="key-3d key-num" onclick="appendDigit('.')"><div class="key-top">.</div></button>
+        <button class="key-3d key-eq" onclick="calculateResult()"><div class="key-top">=</div></button>
       </div>
     </main>
   </div>
 
   <script>
-    // 1. Math Background Generator
-    const mathSymbols = [
-      '∫ f(x)dx', '∑ n²', 'π ≈ 3.14159', 'e^(iπ) + 1 = 0', '√x²', 
-      'lim x→∞', '∂y/∂x', 'E = mc²', 'sin²θ + cos²θ = 1', 'log₂(n)', 'x = (-b±√D)/2a'
-    ];
-    const canvas = document.getElementById('mathCanvas');
-    for (let i = 0; i < 24; i++) {
-      const el = document.createElement('div');
-      el.className = 'math-symbol';
-      el.innerText = mathSymbols[Math.floor(Math.random() * mathSymbols.length)];
-      el.style.left = `${Math.random() * 95}vw`;
-      el.style.fontSize = `${Math.random() * 14 + 14}px`;
-      el.style.animationDuration = `${Math.random() * 10 + 12}s`;
-      el.style.animationDelay = `-${Math.random() * 12}s`;
-      canvas.appendChild(el);
-    }
-
-    // 2. Synthesizer Click Sound
-    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-    let audioCtx = null;
-    function playSound(freq = 400, type = 'sine') {
-      try {
-        if (!audioCtx) audioCtx = new AudioContextClass();
-        if (audioCtx.state === 'suspended') audioCtx.resume();
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = type;
-        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-        gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.05);
-        osc.connect(gain);
-        gain.connect(audioCtx.destination);
-        osc.start();
-        osc.stop(audioCtx.currentTime + 0.05);
-      } catch (e) {}
-    }
-
-    // 3. Calculator State Engine
-    const historyElem = document.getElementById('historyDisplay');
-    const currentElem = document.getElementById('currentDisplay');
-
+    // State
     let currentVal = '0';
     let prevVal = '';
     let currentOp = null;
 
     function updateScreen() {
+      const currentElem = document.getElementById('currentDisplay');
+      const historyElem = document.getElementById('historyDisplay');
+      
       currentElem.innerText = currentVal;
       if (currentOp != null) {
         const symbol = currentOp === '*' ? '×' : currentOp === '/' ? '÷' : currentOp === '-' ? '−' : '+';
-        historyElem.innerText = `${prevVal} ${symbol}`;
+        historyElem.innerText = prevVal + ' ' + symbol;
       } else {
         historyElem.innerText = '';
       }
     }
 
     function appendDigit(d) {
-      playSound(340);
       if (d === '.' && currentVal.includes('.')) return;
       if (currentVal === '0' && d !== '.') {
         currentVal = d;
@@ -386,7 +321,6 @@
     }
 
     function setOperation(op) {
-      playSound(480, 'triangle');
       if (currentVal === '0' && op === '-') {
         currentVal = '-';
         updateScreen();
@@ -404,7 +338,6 @@
     }
 
     function calculateResult() {
-      playSound(620, 'triangle');
       const prev = parseFloat(prevVal);
       const curr = parseFloat(currentVal);
       if (isNaN(prev) || isNaN(curr)) return;
@@ -425,7 +358,6 @@
     }
 
     function clearAll() {
-      playSound(220, 'square');
       currentVal = '0';
       prevVal = '';
       currentOp = null;
@@ -433,7 +365,6 @@
     }
 
     function deleteDigit() {
-      playSound(260, 'square');
       if (currentVal === '0') return;
       currentVal = currentVal.slice(0, -1);
       if (!currentVal || currentVal === '-') currentVal = '0';
@@ -441,27 +372,12 @@
     }
 
     function toggleSign() {
-      playSound(380);
       if (currentVal === '0') return;
       currentVal = (parseFloat(currentVal) * -1).toString();
       updateScreen();
     }
 
-    // Attach Event Listeners
-    document.querySelectorAll('[data-val]').forEach(btn => {
-      btn.addEventListener('click', () => appendDigit(btn.dataset.val));
-    });
-
-    document.querySelectorAll('[data-op]').forEach(btn => {
-      btn.addEventListener('click', () => setOperation(btn.dataset.op));
-    });
-
-    document.getElementById('equalsBtn').addEventListener('click', calculateResult);
-    document.getElementById('clearBtn').addEventListener('click', clearAll);
-    document.getElementById('delBtn').addEventListener('click', deleteDigit);
-    document.getElementById('signBtn').addEventListener('click', toggleSign);
-
-    // Global Keyboard Listeners
+    // Keyboard support
     window.addEventListener('keydown', (e) => {
       if ((e.key >= '0' && e.key <= '9') || e.key === '.') appendDigit(e.key);
       if (['+', '-', '*', '/'].includes(e.key)) setOperation(e.key);
@@ -469,6 +385,20 @@
       if (e.key === 'Backspace') deleteDigit();
       if (e.key === 'Escape') clearAll();
     });
+
+    // Background Math Particles
+    const mathSymbols = ['∫ f(x)dx', '∑ n²', 'π ≈ 3.14', 'e^(iπ) + 1 = 0', '√x²', 'lim x→∞', '∂y/∂x', 'E = mc²', 'sin²θ + cos²θ = 1'];
+    const canvas = document.getElementById('mathCanvas');
+    for (let i = 0; i < 20; i++) {
+      const el = document.createElement('div');
+      el.className = 'math-symbol';
+      el.innerText = mathSymbols[Math.floor(Math.random() * mathSymbols.length)];
+      el.style.left = (Math.random() * 92) + 'vw';
+      el.style.fontSize = (Math.random() * 12 + 14) + 'px';
+      el.style.animationDuration = (Math.random() * 8 + 10) + 's';
+      el.style.animationDelay = '-' + (Math.random() * 10) + 's';
+      canvas.appendChild(el);
+    }
   </script>
 </body>
 </html>
