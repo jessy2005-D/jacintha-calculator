@@ -204,7 +204,7 @@
       transform: translateY(-6px);
       transition: transform 0.06s ease, box-shadow 0.06s ease;
       box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.2);
-      pointer-events: none;
+      pointer-events: auto;
     }
 
     .key-3d:active .key-top {
@@ -247,29 +247,29 @@
       </div>
 
       <div class="keypad">
-        <button class="key-3d key-fn" onclick="clearAll()"><div class="key-top">AC</div></button>
-        <button class="key-3d key-fn" onclick="deleteDigit()"><div class="key-top">⌫</div></button>
-        <button class="key-3d key-op" onclick="toggleSign()"><div class="key-top">±</div></button>
-        <button class="key-3d key-op" onclick="setOperation('/')"><div class="key-top">÷</div></button>
+        <button class="key-3d key-fn"><div class="key-top" onclick="clearAll()">AC</div></button>
+        <button class="key-3d key-fn"><div class="key-top" onclick="deleteDigit()">⌫</div></button>
+        <button class="key-3d key-op"><div class="key-top" onclick="toggleSign()">±</div></button>
+        <button class="key-3d key-op"><div class="key-top" onclick="setOperation('/')">÷</div></button>
 
-        <button class="key-3d key-num" onclick="appendDigit('7')"><div class="key-top">7</div></button>
-        <button class="key-3d key-num" onclick="appendDigit('8')"><div class="key-top">8</div></button>
-        <button class="key-3d key-num" onclick="appendDigit('9')"><div class="key-top">9</div></button>
-        <button class="key-3d key-op" onclick="setOperation('*')"><div class="key-top">×</div></button>
+        <button class="key-3d key-num"><div class="key-top" onclick="appendDigit('7')">7</div></button>
+        <button class="key-3d key-num"><div class="key-top" onclick="appendDigit('8')">8</div></button>
+        <button class="key-3d key-num"><div class="key-top" onclick="appendDigit('9')">9</div></button>
+        <button class="key-3d key-op"><div class="key-top" onclick="setOperation('*')">×</div></button>
 
-        <button class="key-3d key-num" onclick="appendDigit('4')"><div class="key-top">4</div></button>
-        <button class="key-3d key-num" onclick="appendDigit('5')"><div class="key-top">5</div></button>
-        <button class="key-3d key-num" onclick="appendDigit('6')"><div class="key-top">6</div></button>
-        <button class="key-3d key-op" onclick="setOperation('-')"><div class="key-top">−</div></button>
+        <button class="key-3d key-num"><div class="key-top" onclick="appendDigit('4')">4</div></button>
+        <button class="key-3d key-num"><div class="key-top" onclick="appendDigit('5')">5</div></button>
+        <button class="key-3d key-num"><div class="key-top" onclick="appendDigit('6')">6</div></button>
+        <button class="key-3d key-op"><div class="key-top" onclick="setOperation('-')">−</div></button>
 
-        <button class="key-3d key-num" onclick="appendDigit('1')"><div class="key-top">1</div></button>
-        <button class="key-3d key-num" onclick="appendDigit('2')"><div class="key-top">2</div></button>
-        <button class="key-3d key-num" onclick="appendDigit('3')"><div class="key-top">3</div></button>
-        <button class="key-3d key-op" onclick="setOperation('+')"><div class="key-top">+</div></button>
+        <button class="key-3d key-num"><div class="key-top" onclick="appendDigit('1')">1</div></button>
+        <button class="key-3d key-num"><div class="key-top" onclick="appendDigit('2')">2</div></button>
+        <button class="key-3d key-num"><div class="key-top" onclick="appendDigit('3')">3</div></button>
+        <button class="key-3d key-op"><div class="key-top" onclick="setOperation('+')">+</div></button>
 
-        <button class="key-3d key-num span-2" onclick="appendDigit('0')"><div class="key-top">0</div></button>
-        <button class="key-3d key-num" onclick="appendDigit('.')"><div class="key-top">.</div></button>
-        <button class="key-3d key-eq" onclick="calculateResult()"><div class="key-top">=</div></button>
+        <button class="key-3d key-num span-2"><div class="key-top" onclick="appendDigit('0')">0</div></button>
+        <button class="key-3d key-num"><div class="key-top" onclick="appendDigit('.')">.</div></button>
+        <button class="key-3d key-eq"><div class="key-top" onclick="calculateResult()">=</div></button>
       </div>
     </main>
   </div>
