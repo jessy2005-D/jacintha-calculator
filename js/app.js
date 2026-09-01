@@ -2,7 +2,7 @@ const historyElem = document.getElementById('historyDisplay');
 const currentElem = document.getElementById('currentDisplay');
 const calc = new Calculator(historyElem, currentElem);
 
-// Event Listeners with Audio
+// Number Keys
 document.querySelectorAll('[data-val]').forEach(btn => {
   btn.addEventListener('click', () => {
     playClickSound(320);
@@ -10,6 +10,7 @@ document.querySelectorAll('[data-val]').forEach(btn => {
   });
 });
 
+// Operator Keys
 document.querySelectorAll('[data-op]').forEach(btn => {
   btn.addEventListener('click', () => {
     playClickSound(480, 'triangle');
@@ -17,11 +18,13 @@ document.querySelectorAll('[data-op]').forEach(btn => {
   });
 });
 
+// Equals Key
 document.getElementById('equalsBtn').addEventListener('click', () => {
   playClickSound(640, 'triangle');
   calc.compute();
 });
 
+// Action Keys
 document.getElementById('clearBtn').addEventListener('click', () => {
   playClickSound(220, 'square');
   calc.clear();
@@ -37,7 +40,7 @@ document.getElementById('signBtn').addEventListener('click', () => {
   calc.toggleSign();
 });
 
-// Keyboard support
+// Keyboard Controls
 window.addEventListener('keydown', (e) => {
   if ((e.key >= '0' && e.key <= '9') || e.key === '.') {
     playClickSound(320);

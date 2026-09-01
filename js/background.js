@@ -1,14 +1,11 @@
-// Math Formula Background Generator
 const mathSymbols = [
   '∫ f(x)dx', '∑ n²', 'π ≈ 3.14159', 'e^(iπ) + 1 = 0', '√x²', 
   'lim x→∞', '∂y/∂x', 'E = mc²', 'sin²θ + cos²θ = 1', '∇ × B = μ₀J', 
   'f(x) = ax + b', 'λ = h/p', 'Δx · Δp ≥ ℏ/2', 'log₂(n)', 'x = (-b±√D)/2a'
 ];
 
-function initMathBackground() {
-  const canvas = document.getElementById('mathCanvas');
-  if (!canvas) return;
-  
+const canvas = document.getElementById('mathCanvas');
+if (canvas) {
   for (let i = 0; i < 28; i++) {
     const el = document.createElement('div');
     el.className = 'math-symbol';
@@ -20,5 +17,3 @@ function initMathBackground() {
     canvas.appendChild(el);
   }
 }
-
-document.addEventListener('DOMContentLoaded', initMathBackground);

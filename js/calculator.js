@@ -1,86 +1,19 @@
-class Calculator {
-  constructor(historyElem, currentElem) {
-    this.historyElem = historyElem;
-    this.currentElem = currentElem;
-    this.clear();
-  }
+const mathSymbols = [
+  '∫ f(x)dx', '∑ n²', 'π ≈ 3.14159', 'e^(iπ) + 1 = 0', '√x²', 
+  'lim x→∞', '∂y/∂x', 'E = mc²', 'sin²θ + cos²θ = 1', '∇ × B = μ₀J', 
+  'f(x) = ax + b', 'λ = h/p', 'Δx · Δp ≥ ℏ/2', 'log₂(n)', 'x = (-b±√D)/2a'
+];
 
-  clear() {
-    this.currentOperand = '0';
-    this.previousOperand = '';
-    this.operation = undefined;
-    this.updateDisplay();
-  }
-
-  delete() {
-    if (this.currentOperand === '0') return;
-    this.currentOperand = this.currentOperand.toString().slice(0, -1);
-    if (this.currentOperand === '' || this.currentOperand === '-') {
-      this.currentOperand = '0';
-    }
-    this.updateDisplay();
-  }
-
-  toggleSign() {
-    if (this.currentOperand === '0') return;
-    this.currentOperand = (parseFloat(this.currentOperand) * -1).toString();
-    this.updateDisplay();
-  }
-
-  appendNumber(number) {
-    if (number === '.' && this.currentOperand.includes('.')) return;
-    if (this.currentOperand === '0' && number !== '.') {
-      this.currentOperand = number.toString();
-    } else {
-      this.currentOperand = this.currentOperand.toString() + number.toString();
-    }
-    this.updateDisplay();
-  }
-
-  chooseOperation(operation) {
-    if (this.currentOperand === '') return;
-    if (this.previousOperand !== '') {
-      this.compute();
-    }
-    this.operation = operation;
-    this.previousOperand = this.currentOperand;
-    this.currentOperand = '0';
-    this.updateDisplay();
-  }
-
-  compute() {
-    let computation;
-    const prev = parseFloat(this.previousOperand);
-    const current = parseFloat(this.currentOperand);
-    if (isNaN(prev) || isNaN(current)) return;
-
-    switch (this.operation) {
-      case '+': computation = prev + current; break;
-      case '-': computation = prev - current; break;
-      case '*': computation = prev * current; break;
-      case '/': computation = current === 0 ? 'Error' : prev / current; break;
-      default: return;
-    }
-
-    this.currentOperand = computation.toString();
-    this.operation = undefined;
-    this.previousOperand = '';
-    this.updateDisplay();
-  }
-
-  getSymbol(op) {
-    if (op === '*') return '×';
-    if (op === '/') return '÷';
-    if (op === '-') return '−';
-    return op;
-  }
-
-  updateDisplay() {
-    this.currentElem.innerText = this.currentOperand;
-    if (this.operation != null) {
-      this.historyElem.innerText = `${this.previousOperand} ${this.getSymbol(this.operation)}`;
-    } else {
-      this.historyElem.innerText = '';
-    }
+const canvas = document.getElementById('mathCanvas');
+if (canvas) {
+  for (let i = 0; i < 28; i++) {
+    const el = document.createElement('div');
+    el.className = 'math-symbol';
+    el.innerText = mathSymbols[Math.floor(Math.random() * mathSymbols.length)];
+    el.style.left = `${Math.random() * 95}vw`;
+    el.style.fontSize = `${Math.random() * 14 + 14}px`;
+    el.style.animationDuration = `${Math.random() * 12 + 10}s`;
+    el.style.animationDelay = `-${Math.random() * 15}s`;
+    canvas.appendChild(el);
   }
 }
