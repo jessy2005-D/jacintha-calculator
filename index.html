@@ -4,20 +4,277 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>MathMatrix 3D — Engineering Grade Calculator</title>
-  <link rel="stylesheet" href="css/style.css" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@500;700&family=Outfit:wght@600;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #070b12;
+      --grid-line: rgba(56, 189, 248, 0.06);
+      
+      --chassis-top: #1b2434;
+      --chassis-side: #0f172a;
+      --chassis-border: #2e3d56;
+      
+      --screen-bg: #030712;
+      --screen-border: #1e293b;
+      --glow-cyan: #38bdf8;
+      
+      --key-num-top: #2c384d;
+      --key-num-side: #18202c;
+      --key-num-text: #f8fafc;
+      
+      --key-fn-top: #f43f5e;
+      --key-fn-side: #9f1239;
+      --key-fn-text: #ffffff;
+      
+      --key-op-top: #f59e0b;
+      --key-op-side: #b45309;
+      --key-op-text: #ffffff;
+      
+      --key-eq-top: #06b6d4;
+      --key-eq-side: #0e7490;
+      --key-eq-text: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Outfit', sans-serif;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: var(--bg-dark);
+      overflow: hidden;
+      perspective: 1200px;
+      position: relative;
+    }
+
+    /* Math Formula Floating Background */
+    .math-canvas {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background-image: 
+        linear-gradient(var(--grid-line) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+
+    .math-symbol {
+      position: absolute;
+      font-family: 'Fira Code', monospace;
+      font-weight: 700;
+      color: rgba(56, 189, 248, 0.12);
+      animation: floatUp 18s infinite linear;
+      pointer-events: none;
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { transform: translateY(-20vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* 3D Calculator Chassis */
+    .calc-3d-stage {
+      position: relative;
+      z-index: 10;
+      transform-style: preserve-3d;
+      transform: rotateX(8deg) rotateY(-2deg);
+      transition: transform 0.3s ease;
+    }
+
+    .calc-3d-stage:hover {
+      transform: rotateX(0deg) rotateY(0deg);
+    }
+
+    .calculator {
+      width: 360px;
+      background: var(--chassis-top);
+      border-radius: 32px;
+      padding: 26px 22px;
+      border: 2px solid var(--chassis-border);
+      box-shadow: 
+        0 14px 0 var(--chassis-side),
+        0 28px 50px rgba(0, 0, 0, 0.8),
+        inset 0 2px 0 rgba(255, 255, 255, 0.12);
+    }
+
+    /* Top HUD / Banner */
+    .hud-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+      padding-bottom: 8px;
+    }
+
+    .hud-title {
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 2.5px;
+      color: var(--glow-cyan);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .hud-pulse {
+      width: 8px;
+      height: 8px;
+      background: #10b981;
+      border-radius: 50%;
+      box-shadow: 0 0 10px #10b981;
+    }
+
+    .hud-chip {
+      font-family: 'Fira Code', monospace;
+      font-size: 11px;
+      color: #94a3b8;
+      background: rgba(0, 0, 0, 0.35);
+      padding: 2px 8px;
+      border-radius: 6px;
+    }
+
+    /* Display Screen */
+    .screen {
+      background: var(--screen-bg);
+      border: 2px solid var(--screen-border);
+      border-radius: 20px;
+      padding: 16px 20px;
+      min-height: 98px;
+      margin-bottom: 22px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: flex-end;
+      box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.9);
+    }
+
+    .screen-history {
+      font-family: 'Fira Code', monospace;
+      font-size: 14px;
+      color: #64748b;
+      min-height: 18px;
+    }
+
+    .screen-value {
+      font-family: 'Fira Code', monospace;
+      font-size: 38px;
+      font-weight: 700;
+      color: #38bdf8;
+      text-shadow: 0 0 14px rgba(56, 189, 248, 0.45);
+      max-width: 100%;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* 3D Keypad Grid */
+    .keypad {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    /* 3D Buttons */
+    .key-3d {
+      height: 58px;
+      position: relative;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      outline: none;
+      user-select: none;
+    }
+
+    .key-top {
+      position: absolute;
+      inset: 0;
+      border-radius: 16px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 21px;
+      font-weight: 800;
+      transform: translateY(-6px);
+      transition: transform 0.06s ease, box-shadow 0.06s ease;
+      box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.2);
+      pointer-events: none; /* Allows click to pass straight to button */
+    }
+
+    .key-3d:active .key-top {
+      transform: translateY(0);
+      filter: brightness(0.92);
+    }
+
+    /* Numbers */
+    .key-num .key-top {
+      background: var(--key-num-top);
+      box-shadow: 0 6px 0 var(--key-num-side), inset 0 2px 0 rgba(255, 255, 255, 0.15);
+      color: var(--key-num-text);
+    }
+    .key-num:active .key-top {
+      box-shadow: 0 0 0 var(--key-num-side);
+    }
+
+    /* Danger Actions (AC/DEL) */
+    .key-fn .key-top {
+      background: var(--key-fn-top);
+      box-shadow: 0 6px 0 var(--key-fn-side), inset 0 2px 0 rgba(255, 255, 255, 0.25);
+      color: var(--key-fn-text);
+    }
+    .key-fn:active .key-top {
+      box-shadow: 0 0 0 var(--key-fn-side);
+    }
+
+    /* Operators */
+    .key-op .key-top {
+      background: var(--key-op-top);
+      box-shadow: 0 6px 0 var(--key-op-side), inset 0 2px 0 rgba(255, 255, 255, 0.25);
+      color: var(--key-op-text);
+      font-size: 24px;
+    }
+    .key-op:active .key-top {
+      box-shadow: 0 0 0 var(--key-op-side);
+    }
+
+    /* Equals Key */
+    .key-eq .key-top {
+      background: var(--key-eq-top);
+      box-shadow: 0 6px 0 var(--key-eq-side), inset 0 2px 0 rgba(255, 255, 255, 0.3), 0 0 16px rgba(6, 182, 212, 0.4);
+      color: var(--key-eq-text);
+      font-size: 26px;
+    }
+    .key-eq:active .key-top {
+      box-shadow: 0 0 0 var(--key-eq-side);
+    }
+
+    .span-2 {
+      grid-column: span 2;
+    }
+  </style>
 </head>
 <body>
 
-  <!-- Floating Mathematical Matrix Background -->
+  <!-- Floating Mathematical Background -->
   <div class="math-canvas" id="mathCanvas"></div>
 
   <!-- 3D Isometric Viewport -->
   <div class="calc-3d-stage">
     <main class="calculator">
-      <!-- HUD Header -->
+      <!-- HUD Bar -->
       <div class="hud-bar">
         <div class="hud-title">
           <span class="hud-pulse"></span>
@@ -26,13 +283,13 @@
         <span class="hud-chip">PROD v2.0</span>
       </div>
 
-      <!-- Display Screen -->
+      <!-- Screen Display -->
       <div class="screen">
         <div class="screen-history" id="historyDisplay"></div>
         <div class="screen-value" id="currentDisplay">0</div>
       </div>
 
-      <!-- Tactile 3D Keypad -->
+      <!-- Keypad -->
       <div class="keypad">
         <button class="key-3d key-fn" id="clearBtn"><div class="key-top">AC</div></button>
         <button class="key-3d key-fn" id="delBtn"><div class="key-top">⌫</div></button>
@@ -61,9 +318,157 @@
     </main>
   </div>
 
-  <script src="js/background.js"></script>
-  <script src="js/audio.js"></script>
-  <script src="js/calculator.js"></script>
-  <script src="js/app.js"></script>
+  <script>
+    // 1. Math Background Generator
+    const mathSymbols = [
+      '∫ f(x)dx', '∑ n²', 'π ≈ 3.14159', 'e^(iπ) + 1 = 0', '√x²', 
+      'lim x→∞', '∂y/∂x', 'E = mc²', 'sin²θ + cos²θ = 1', 'log₂(n)', 'x = (-b±√D)/2a'
+    ];
+    const canvas = document.getElementById('mathCanvas');
+    for (let i = 0; i < 24; i++) {
+      const el = document.createElement('div');
+      el.className = 'math-symbol';
+      el.innerText = mathSymbols[Math.floor(Math.random() * mathSymbols.length)];
+      el.style.left = `${Math.random() * 95}vw`;
+      el.style.fontSize = `${Math.random() * 14 + 14}px`;
+      el.style.animationDuration = `${Math.random() * 10 + 12}s`;
+      el.style.animationDelay = `-${Math.random() * 12}s`;
+      canvas.appendChild(el);
+    }
+
+    // 2. Synthesizer Click Sound
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    let audioCtx = null;
+    function playSound(freq = 400, type = 'sine') {
+      try {
+        if (!audioCtx) audioCtx = new AudioContextClass();
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+        gain.gain.setValueAtTime(0.06, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.05);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.05);
+      } catch (e) {}
+    }
+
+    // 3. Calculator State Engine
+    const historyElem = document.getElementById('historyDisplay');
+    const currentElem = document.getElementById('currentDisplay');
+
+    let currentVal = '0';
+    let prevVal = '';
+    let currentOp = null;
+
+    function updateScreen() {
+      currentElem.innerText = currentVal;
+      if (currentOp != null) {
+        const symbol = currentOp === '*' ? '×' : currentOp === '/' ? '÷' : currentOp === '-' ? '−' : '+';
+        historyElem.innerText = `${prevVal} ${symbol}`;
+      } else {
+        historyElem.innerText = '';
+      }
+    }
+
+    function appendDigit(d) {
+      playSound(340);
+      if (d === '.' && currentVal.includes('.')) return;
+      if (currentVal === '0' && d !== '.') {
+        currentVal = d;
+      } else {
+        currentVal += d;
+      }
+      updateScreen();
+    }
+
+    function setOperation(op) {
+      playSound(480, 'triangle');
+      if (currentVal === '0' && op === '-') {
+        currentVal = '-';
+        updateScreen();
+        return;
+      }
+      if (currentVal === '-' || currentVal === '') return;
+
+      if (prevVal !== '') {
+        calculateResult();
+      }
+      currentOp = op;
+      prevVal = currentVal;
+      currentVal = '0';
+      updateScreen();
+    }
+
+    function calculateResult() {
+      playSound(620, 'triangle');
+      const prev = parseFloat(prevVal);
+      const curr = parseFloat(currentVal);
+      if (isNaN(prev) || isNaN(curr)) return;
+
+      let res = 0;
+      switch (currentOp) {
+        case '+': res = prev + curr; break;
+        case '-': res = prev - curr; break;
+        case '*': res = prev * curr; break;
+        case '/': res = curr === 0 ? 'Error' : prev / curr; break;
+        default: return;
+      }
+
+      currentVal = res.toString();
+      currentOp = null;
+      prevVal = '';
+      updateScreen();
+    }
+
+    function clearAll() {
+      playSound(220, 'square');
+      currentVal = '0';
+      prevVal = '';
+      currentOp = null;
+      updateScreen();
+    }
+
+    function deleteDigit() {
+      playSound(260, 'square');
+      if (currentVal === '0') return;
+      currentVal = currentVal.slice(0, -1);
+      if (!currentVal || currentVal === '-') currentVal = '0';
+      updateScreen();
+    }
+
+    function toggleSign() {
+      playSound(380);
+      if (currentVal === '0') return;
+      currentVal = (parseFloat(currentVal) * -1).toString();
+      updateScreen();
+    }
+
+    // Attach Event Listeners
+    document.querySelectorAll('[data-val]').forEach(btn => {
+      btn.addEventListener('click', () => appendDigit(btn.dataset.val));
+    });
+
+    document.querySelectorAll('[data-op]').forEach(btn => {
+      btn.addEventListener('click', () => setOperation(btn.dataset.op));
+    });
+
+    document.getElementById('equalsBtn').addEventListener('click', calculateResult);
+    document.getElementById('clearBtn').addEventListener('click', clearAll);
+    document.getElementById('delBtn').addEventListener('click', deleteDigit);
+    document.getElementById('signBtn').addEventListener('click', toggleSign);
+
+    // Global Keyboard Listeners
+    window.addEventListener('keydown', (e) => {
+      if ((e.key >= '0' && e.key <= '9') || e.key === '.') appendDigit(e.key);
+      if (['+', '-', '*', '/'].includes(e.key)) setOperation(e.key);
+      if (e.key === 'Enter' || e.key === '=') { e.preventDefault(); calculateResult(); }
+      if (e.key === 'Backspace') deleteDigit();
+      if (e.key === 'Escape') clearAll();
+    });
+  </script>
 </body>
 </html>
