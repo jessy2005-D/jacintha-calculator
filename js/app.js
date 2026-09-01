@@ -1,49 +1,64 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const previousOperandTextElement = document.querySelector('.previous-operand');
-    const currentOperandTextElement = document.querySelector('.current-operand');
-    const calculator = new Calculator(previousOperandTextElement, currentOperandTextElement);
+const historyElem = document.getElementById('historyDisplay');
+const currentElem = document.getElementById('currentDisplay');
+const historyList = document.getElementById('historyList');
+const historyDrawer = document.getElementById('historyDrawer');
+const historyToggleBtn = document.getElementById('historyToggleBtn');
+const clearHistoryBtn = document.getElementById('clearHistoryBtn');
 
-    const buttons = document.querySelectorAll('button');
-    
-    buttons.forEach(button => {
-        button.addEventListener('click', () => {
-            const buttonText = button.innerText;
-            
-            if (buttonText === 'AC') {
-                calculator.clear();
-            } else if (buttonText === 'DEL') {
-                calculator.delete();
-            } else if (buttonText === '=') {
-                calculator.compute();
-            } else if (['+', '-', '*', '÷'].includes(buttonText)) {
-                calculator.chooseOperation(buttonText);
-            } else {
-                calculator.appendNumber(buttonText);
-            }
-            
-            calculator.updateDisplay();
-        });
-    });
+const tape = [];
 
-    // Keyboard support
-    document.addEventListener('keydown', (e) => {
-        if (e.key >= '0' && e.key <= '9' || e.key === '.') {
-            calculator.appendNumber(e.key);
-        } else if (e.key === '+' || e.key === '-') {
-            calculator.chooseOperation(e.key);
-        } else if (e.key === '*') {
-            calculator.chooseOperation('*');
-        } else if (e.key === '/') {
-            e.preventDefault();
-            calculator.chooseOperation('÷');
-        } else if (e.key === 'Enter' || e.key === '=') {
-            e.preventDefault();
-            calculator.compute();
-        } else if (e.key === 'Backspace') {
-            calculator.delete();
-        } else if (e.key === 'Escape') {
-            calculator.clear();
-        }
-        calculator.updateDisplay();
-    });
+function handleNewCalculation(expression, result) {
+  tape.unshift({ expression, result });
+  renderHistory();
+}
+
+function renderHistory() {
+  if (tape.length === 0) {
+    historyList.innerHTML = '<div class="history-empty">No calculations yet</div>';
+    return;
+  }
+  historyList.innerHTML = tape
+    .map(item => `
+      <div class="history-item">
+        <div class="history-item-exp">${item.expression}</div>
+        <div class="history-item-res">= ${item.result}</div>
+      </div>
+    `)
+    .join('');
+}
+
+const calc = new Calculator(historyElem, currentElem, handleNewCalculation);
+
+// Toggle History Drawer
+historyToggleBtn.addEventListener('click', () => {
+  historyDrawer.classList.toggle('hidden');
+});
+
+// Clear Tape
+clearHistoryBtn.addEventListener('click', () => {
+  tape.length = 0;
+  renderHistory();
+});
+
+// Keypad Event Handlers
+document.querySelectorAll('[data-val]').forEach(btn => {
+  btn.addEventListener('click', () => calc.appendNumber(btn.dataset.val));
+});
+
+document.querySelectorAll('[data-op]').forEach(btn => {
+  btn.addEventListener('click', () => calc.chooseOperation(btn.dataset.op));
+});
+
+document.getElementById('equalsBtn').addEventListener('click', () => calc.compute());
+document.getElementById('clearBtn').addEventListener('click', () => calc.clear());
+document.getElementById('delBtn').addEventListener('click', () => calc.delete());
+document.getElementById('signBtn').addEventListener('click', () => calc.toggleSign());
+
+// Keyboard Bindings
+window.addEventListener('keydown', (e) => {
+  if ((e.key >= '0' && e.key <= '9') || e.key === '.') calc.appendNumber(e.key);
+  if (['+', '-', '*', '/'].includes(e.key)) calc.chooseOperation(e.key);
+  if (e.key === 'Enter' || e.key === '=') calc.compute();
+  if (e.key === 'Backspace') calc.delete();
+  if (e.key === 'Escape') calc.clear();
 });
