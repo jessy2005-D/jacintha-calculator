@@ -3,323 +3,67 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Minimalist Dark Navy Calculator</title>
+  <title>MathMatrix 3D — Engineering Grade Calculator</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --page-bg: #d9e2ec;
-      --chassis-bg: #151d2a;
-      --screen-bg: #f8fafc;
-      --screen-text: #0f172a;
-      --screen-dim: #64748b;
-      
-      --btn-navy-bg: #222d3d;
-      --btn-navy-text: #f8fafc;
-      
-      --btn-light-bg: #e2e8f0;
-      --btn-light-text: #2563eb;
-      
-      --btn-blue-bg: #2563eb;
-      --btn-blue-shadow: rgba(37, 99, 235, 0.45);
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
-      user-select: none;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    body {
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background-color: var(--page-bg);
-      padding: 24px;
-    }
-
-    /* Outer Device Body */
-    .calc-chassis {
-      width: 100%;
-      max-width: 360px;
-      background: var(--chassis-bg);
-      border-radius: 36px;
-      padding: 32px 24px 28px 24px;
-      box-shadow: 0 25px 60px rgba(15, 23, 42, 0.28), 0 10px 20px rgba(15, 23, 42, 0.15);
-    }
-
-    /* Header Text */
-    .calc-title {
-      text-align: center;
-      font-size: 15px;
-      font-weight: 800;
-      letter-spacing: 5px;
-      color: #ffffff;
-      margin-bottom: 22px;
-    }
-
-    /* Display Screen */
-    .display-screen {
-      background: var(--screen-bg);
-      border-radius: 18px;
-      padding: 18px 20px;
-      min-height: 96px;
-      margin-bottom: 24px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      align-items: flex-end;
-      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.04);
-    }
-
-    .history-display {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--screen-dim);
-      min-height: 18px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .current-display {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 38px;
-      font-weight: 700;
-      color: var(--screen-text);
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      max-width: 100%;
-      line-height: 1.1;
-    }
-
-    /* Keypad Grid */
-    .keypad-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      grid-template-rows: repeat(5, 62px);
-      gap: 14px;
-    }
-
-    /* Base Key Styles */
-    .key {
-      border: none;
-      border-radius: 16px;
-      font-size: 21px;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      transition: transform 0.08s ease, filter 0.08s ease;
-    }
-
-    .key:active {
-      transform: scale(0.94);
-      filter: brightness(0.9);
-    }
-
-    /* Dark Navy Number & Utility Keys */
-    .key-navy {
-      background: var(--btn-navy-bg);
-      color: var(--btn-navy-text);
-    }
-
-    /* Soft White-Blue Operator Keys */
-    .key-light-op {
-      background: var(--btn-light-bg);
-      color: var(--btn-light-text);
-      font-size: 24px;
-    }
-
-    /* Tall Electric Blue Equals Key */
-    .key-equals {
-      grid-column: 4;
-      grid-row: 4 / span 2;
-      height: 100%;
-      background: var(--btn-blue-bg);
-      color: #ffffff;
-      font-size: 28px;
-      box-shadow: 0 8px 24px var(--btn-blue-shadow);
-    }
-
-    /* Wide 0 Key */
-    .key-zero {
-      grid-column: span 2;
-    }
-  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@500;700&family=Outfit:wght@600;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-  <main class="calc-chassis">
-    <!-- Header Title -->
-    <h1 class="calc-title">CALCULATOR</h1>
+  <!-- Floating Mathematics Background -->
+  <div class="math-canvas" id="mathCanvas"></div>
 
-    <!-- Pure White Display Screen -->
-    <div class="display-screen">
-      <div class="history-display" id="historyDisplay"></div>
-      <div class="current-display" id="currentDisplay">0</div>
-    </div>
+  <!-- 3D Perspective Isometric Stage -->
+  <div class="calc-3d-stage">
+    <main class="calculator">
+      <!-- HUD Status -->
+      <div class="hud-bar">
+        <div class="hud-title">
+          <span class="hud-pulse"></span>
+          MATHMATRIX 3D
+        </div>
+        <span class="hud-chip">PROD v2.0</span>
+      </div>
 
-    <!-- 4x5 Keypad Grid -->
-    <div class="keypad-grid">
-      <!-- Row 1 -->
-      <button class="key key-navy" id="clearBtn">C</button>
-      <button class="key key-navy" id="delBtn">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21 4H8l-7 8 7 8h13a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2z"></path>
-          <line x1="18" y1="9" x2="12" y2="15"></line>
-          <line x1="12" y1="9" x2="18" y2="15"></line>
-        </svg>
-      </button>
-      <button class="key key-light-op" data-op="/">÷</button>
-      <button class="key key-light-op" data-op="*">×</button>
+      <!-- Display Screen -->
+      <div class="screen">
+        <div class="screen-history" id="historyDisplay"></div>
+        <div class="screen-value" id="currentDisplay">0</div>
+      </div>
 
-      <!-- Row 2 -->
-      <button class="key key-navy" data-val="7">7</button>
-      <button class="key key-navy" data-val="8">8</button>
-      <button class="key key-navy" data-val="9">9</button>
-      <button class="key key-light-op" data-op="-">−</button>
+      <!-- Keypad -->
+      <div class="keypad">
+        <button class="key-3d key-fn" id="clearBtn"><div class="key-top">AC</div></button>
+        <button class="key-3d key-fn" id="delBtn"><div class="key-top">⌫</div></button>
+        <button class="key-3d key-op" id="signBtn"><div class="key-top">±</div></button>
+        <button class="key-3d key-op" data-op="/"><div class="key-top">÷</div></button>
 
-      <!-- Row 3 -->
-      <button class="key key-navy" data-val="4">4</button>
-      <button class="key key-navy" data-val="5">5</button>
-      <button class="key key-navy" data-val="6">6</button>
-      <button class="key key-light-op" data-op="+">+</button>
+        <button class="key-3d key-num" data-val="7"><div class="key-top">7</div></button>
+        <button class="key-3d key-num" data-val="8"><div class="key-top">8</div></button>
+        <button class="key-3d key-num" data-val="9"><div class="key-top">9</div></button>
+        <button class="key-3d key-op" data-op="*"><div class="key-top">×</div></button>
 
-      <!-- Row 4 -->
-      <button class="key key-navy" data-val="1">1</button>
-      <button class="key key-navy" data-val="2">2</button>
-      <button class="key key-navy" data-val="3">3</button>
-      <button class="key key-equals" id="equalsBtn">=</button>
+        <button class="key-3d key-num" data-val="4"><div class="key-top">4</div></button>
+        <button class="key-3d key-num" data-val="5"><div class="key-top">5</div></button>
+        <button class="key-3d key-num" data-val="6"><div class="key-top">6</div></button>
+        <button class="key-3d key-op" data-op="-"><div class="key-top">−</div></button>
 
-      <!-- Row 5 -->
-      <button class="key key-navy key-zero" data-val="0">0</button>
-      <button class="key key-navy" data-val=".">.</button>
-    </div>
-  </main>
+        <button class="key-3d key-num" data-val="1"><div class="key-top">1</div></button>
+        <button class="key-3d key-num" data-val="2"><div class="key-top">2</div></button>
+        <button class="key-3d key-num" data-val="3"><div class="key-top">3</div></button>
+        <button class="key-3d key-op" data-op="+"><div class="key-top">+</div></button>
 
-  <script>
-    class Calculator {
-      constructor(historyElem, currentElem) {
-        this.historyElem = historyElem;
-        this.currentElem = currentElem;
-        this.clear();
-      }
+        <button class="key-3d key-num span-2" data-val="0"><div class="key-top">0</div></button>
+        <button class="key-3d key-num" data-val="."><div class="key-top">.</div></button>
+        <button class="key-3d key-eq" id="equalsBtn"><div class="key-top">=</div></button>
+      </div>
+    </main>
+  </div>
 
-      clear() {
-        this.currentOperand = '0';
-        this.previousOperand = '';
-        this.operation = undefined;
-        this.updateDisplay();
-      }
-
-      delete() {
-        if (this.currentOperand === '0') return;
-        this.currentOperand = this.currentOperand.toString().slice(0, -1);
-        if (this.currentOperand === '' || this.currentOperand === '-') {
-          this.currentOperand = '0';
-        }
-        this.updateDisplay();
-      }
-
-      appendNumber(number) {
-        if (number === '.' && this.currentOperand.includes('.')) return;
-        if (this.currentOperand === '0' && number !== '.') {
-          this.currentOperand = number.toString();
-        } else {
-          this.currentOperand = this.currentOperand.toString() + number.toString();
-        }
-        this.updateDisplay();
-      }
-
-      chooseOperation(operation) {
-        if (this.currentOperand === '0' && operation === '-') {
-          this.currentOperand = '-';
-          this.updateDisplay();
-          return;
-        }
-        if (this.currentOperand === '-' || this.currentOperand === '') return;
-
-        if (this.previousOperand !== '') {
-          this.compute();
-        }
-        this.operation = operation;
-        this.previousOperand = this.currentOperand;
-        this.currentOperand = '0';
-        this.updateDisplay();
-      }
-
-      compute() {
-        let computation;
-        const prev = parseFloat(this.previousOperand);
-        const current = parseFloat(this.currentOperand);
-        if (isNaN(prev) || isNaN(current)) return;
-
-        switch (this.operation) {
-          case '+': computation = prev + current; break;
-          case '-': computation = prev - current; break;
-          case '*': computation = prev * current; break;
-          case '/': computation = current === 0 ? 'Error' : prev / current; break;
-          default: return;
-        }
-
-        this.currentOperand = computation.toString();
-        this.operation = undefined;
-        this.previousOperand = '';
-        this.updateDisplay();
-      }
-
-      getSymbol(op) {
-        if (op === '*') return '×';
-        if (op === '/') return '÷';
-        if (op === '-') return '−';
-        return op;
-      }
-
-      updateDisplay() {
-        this.currentElem.innerText = this.currentOperand;
-        if (this.operation != null) {
-          this.historyElem.innerText = `${this.previousOperand} ${this.getSymbol(this.operation)}`;
-        } else {
-          this.historyElem.innerText = '';
-        }
-      }
-    }
-
-    const historyElem = document.getElementById('historyDisplay');
-    const currentElem = document.getElementById('currentDisplay');
-    const calc = new Calculator(historyElem, currentElem);
-
-    document.querySelectorAll('[data-val]').forEach(btn => {
-      btn.addEventListener('click', () => calc.appendNumber(btn.dataset.val));
-    });
-
-    document.querySelectorAll('[data-op]').forEach(btn => {
-      btn.addEventListener('click', () => calc.chooseOperation(btn.dataset.op));
-    });
-
-    document.getElementById('equalsBtn').addEventListener('click', () => calc.compute());
-    document.getElementById('clearBtn').addEventListener('click', () => calc.clear());
-    document.getElementById('delBtn').addEventListener('click', () => calc.delete());
-
-    window.addEventListener('keydown', (e) => {
-      if ((e.key >= '0' && e.key <= '9') || e.key === '.') calc.appendNumber(e.key);
-      if (['+', '-', '*', '/'].includes(e.key)) calc.chooseOperation(e.key);
-      if (e.key === 'Enter' || e.key === '=') {
-        e.preventDefault();
-        calc.compute();
-      }
-      if (e.key === 'Backspace') calc.delete();
-      if (e.key === 'Escape') calc.clear();
-    });
-  </script>
+  <script src="js/background.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/calculator.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>

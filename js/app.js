@@ -1,64 +1,63 @@
 const historyElem = document.getElementById('historyDisplay');
 const currentElem = document.getElementById('currentDisplay');
-const historyList = document.getElementById('historyList');
-const historyDrawer = document.getElementById('historyDrawer');
-const historyToggleBtn = document.getElementById('historyToggleBtn');
-const clearHistoryBtn = document.getElementById('clearHistoryBtn');
+const calc = new Calculator(historyElem, currentElem);
 
-const tape = [];
-
-function handleNewCalculation(expression, result) {
-  tape.unshift({ expression, result });
-  renderHistory();
-}
-
-function renderHistory() {
-  if (tape.length === 0) {
-    historyList.innerHTML = '<div class="history-empty">No calculations yet</div>';
-    return;
-  }
-  historyList.innerHTML = tape
-    .map(item => `
-      <div class="history-item">
-        <div class="history-item-exp">${item.expression}</div>
-        <div class="history-item-res">= ${item.result}</div>
-      </div>
-    `)
-    .join('');
-}
-
-const calc = new Calculator(historyElem, currentElem, handleNewCalculation);
-
-// Toggle History Drawer
-historyToggleBtn.addEventListener('click', () => {
-  historyDrawer.classList.toggle('hidden');
-});
-
-// Clear Tape
-clearHistoryBtn.addEventListener('click', () => {
-  tape.length = 0;
-  renderHistory();
-});
-
-// Keypad Event Handlers
+// Event Listeners with Audio
 document.querySelectorAll('[data-val]').forEach(btn => {
-  btn.addEventListener('click', () => calc.appendNumber(btn.dataset.val));
+  btn.addEventListener('click', () => {
+    playClickSound(320);
+    calc.appendNumber(btn.dataset.val);
+  });
 });
 
 document.querySelectorAll('[data-op]').forEach(btn => {
-  btn.addEventListener('click', () => calc.chooseOperation(btn.dataset.op));
+  btn.addEventListener('click', () => {
+    playClickSound(480, 'triangle');
+    calc.chooseOperation(btn.dataset.op);
+  });
 });
 
-document.getElementById('equalsBtn').addEventListener('click', () => calc.compute());
-document.getElementById('clearBtn').addEventListener('click', () => calc.clear());
-document.getElementById('delBtn').addEventListener('click', () => calc.delete());
-document.getElementById('signBtn').addEventListener('click', () => calc.toggleSign());
+document.getElementById('equalsBtn').addEventListener('click', () => {
+  playClickSound(640, 'triangle');
+  calc.compute();
+});
 
-// Keyboard Bindings
+document.getElementById('clearBtn').addEventListener('click', () => {
+  playClickSound(220, 'square');
+  calc.clear();
+});
+
+document.getElementById('delBtn').addEventListener('click', () => {
+  playClickSound(260, 'square');
+  calc.delete();
+});
+
+document.getElementById('signBtn').addEventListener('click', () => {
+  playClickSound(360);
+  calc.toggleSign();
+});
+
+// Keyboard support
 window.addEventListener('keydown', (e) => {
-  if ((e.key >= '0' && e.key <= '9') || e.key === '.') calc.appendNumber(e.key);
-  if (['+', '-', '*', '/'].includes(e.key)) calc.chooseOperation(e.key);
-  if (e.key === 'Enter' || e.key === '=') calc.compute();
-  if (e.key === 'Backspace') calc.delete();
-  if (e.key === 'Escape') calc.clear();
+  if ((e.key >= '0' && e.key <= '9') || e.key === '.') {
+    playClickSound(320);
+    calc.appendNumber(e.key);
+  }
+  if (['+', '-', '*', '/'].includes(e.key)) {
+    playClickSound(480, 'triangle');
+    calc.chooseOperation(e.key);
+  }
+  if (e.key === 'Enter' || e.key === '=') {
+    e.preventDefault();
+    playClickSound(640, 'triangle');
+    calc.compute();
+  }
+  if (e.key === 'Backspace') {
+    playClickSound(260, 'square');
+    calc.delete();
+  }
+  if (e.key === 'Escape') {
+    playClickSound(220, 'square');
+    calc.clear();
+  }
 });

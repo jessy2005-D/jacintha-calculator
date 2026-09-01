@@ -1,8 +1,7 @@
 class Calculator {
-  constructor(historyElem, currentElem, onCalculation) {
+  constructor(historyElem, currentElem) {
     this.historyElem = historyElem;
     this.currentElem = currentElem;
-    this.onCalculation = onCalculation;
     this.clear();
   }
 
@@ -63,14 +62,7 @@ class Calculator {
       default: return;
     }
 
-    const expressionStr = `${this.previousOperand} ${this.getSymbol(this.operation)} ${this.currentOperand}`;
-    const resultStr = computation.toString();
-
-    if (this.onCalculation) {
-      this.onCalculation(expressionStr, resultStr);
-    }
-
-    this.currentOperand = resultStr;
+    this.currentOperand = computation.toString();
     this.operation = undefined;
     this.previousOperand = '';
     this.updateDisplay();
